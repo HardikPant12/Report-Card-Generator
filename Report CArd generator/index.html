@@ -1,0 +1,1059 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>PM SHREE ATAL UTKRISHT GOV. INTER COLLEGE - Report Card Generator</title>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" />
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
+  <style>
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    }
+
+    body {
+      background-color: #f0f2f5;
+      color: #333;
+      line-height: 1.6;
+      padding: 20px;
+      max-width: 1200px;
+      margin: 0 auto;
+    }
+
+    .container {
+      display: flex;
+      flex-direction: column;
+      gap: 20px;
+    }
+
+    header {
+      text-align: center;
+      background: linear-gradient(135deg, #1a237e 0%, #283593 100%);
+      color: white;
+      padding: 15px;
+      border-radius: 8px;
+      box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+      position: relative;
+    }
+
+    header h1 {
+      font-size: 24px;
+      margin-bottom: 5px;
+    }
+
+    header h2 {
+      font-size: 18px;
+      font-weight: normal;
+      margin-bottom: 5px;
+    }
+
+    header h3 {
+      font-size: 16px;
+      font-weight: normal;
+      font-style: italic;
+    }
+
+    .school-logo {
+      position: absolute;
+      top: 15px;
+      right: 20px;
+      width: 80px;
+      height: 80px;
+      background: white;
+      border-radius: 50%;
+      padding: 5px;
+      box-shadow: 0 0 10px rgba(0,0,0,0.2);
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+      text-align: center;
+      font-weight: bold;
+      font-size: 12px;
+      line-height: 1.2;
+    }
+
+    .main-content {
+      display: flex;
+      gap: 20px;
+    }
+
+    .form-container {
+      flex: 1;
+      background: white;
+      padding: 20px;
+      border-radius: 10px;
+      box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+    }
+
+    .preview-container {
+      flex: 1;
+      background: white;
+      padding: 20px;
+      border-radius: 10px;
+      box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+      max-height: 80vh;
+      overflow-y: auto;
+    }
+
+    .form-section {
+      margin-bottom: 20px;
+      padding-bottom: 15px;
+      border-bottom: 1px solid #eee;
+    }
+
+    .form-section h3 {
+      color: #1a237e;
+      margin-bottom: 15px;
+      padding-bottom: 5px;
+      border-bottom: 2px solid #1a237e;
+    }
+
+    .form-group {
+      display: flex;
+      margin-bottom: 10px;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .form-group label {
+      width: 180px;
+      font-weight: 600;
+      color: #333;
+    }
+
+    .form-group input,
+    .form-group select {
+      flex: 1;
+      padding: 10px;
+      border: 1px solid #ddd;
+      border-radius: 4px;
+      font-size: 16px;
+    }
+
+    .form-group input:focus,
+    .form-group select:focus {
+      border-color: #3949ab;
+      outline: none;
+      box-shadow: 0 0 5px rgba(57, 73, 171, 0.3);
+    }
+
+    .marks-table {
+      width: 100%;
+      border-collapse: collapse;
+      margin-top: 10px;
+    }
+
+    .marks-table th,
+    .marks-table td {
+      border: 1px solid #ddd;
+      padding: 8px;
+      text-align: center;
+    }
+
+    .marks-table th {
+      background-color: #e8eaf6;
+    }
+
+    .marks-table input {
+      width: 60px;
+      text-align: center;
+      padding: 6px 8px;
+      border: 1px solid #ddd;
+      border-radius: 4px;
+    }
+
+    .button-group {
+      display: flex;
+      justify-content: center;
+      gap: 15px;
+      margin-top: 20px;
+      flex-wrap: wrap;
+    }
+
+    button {
+      padding: 12px 25px;
+      border: none;
+      border-radius: 5px;
+      font-size: 16px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.3s;
+    }
+
+    .btn-generate {
+      background: #3949ab;
+      color: white;
+    }
+
+    .btn-generate:hover {
+      background: #283593;
+      transform: translateY(-2px);
+      box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    }
+
+    .btn-download {
+      background: #43a047;
+      color: white;
+    }
+
+    .btn-download:hover {
+      background: #388e3c;
+      transform: translateY(-2px);
+      box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    }
+
+    .btn-reset {
+      background: #e53935;
+      color: white;
+    }
+
+    .btn-reset:hover {
+      background: #d32f2f;
+      transform: translateY(-2px);
+      box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    }
+
+    .btn-save {
+      background: #ff9800;
+      color: #fff;
+    }
+
+    .btn-load {
+      background: #2196f3;
+      color: #fff;
+    }
+
+    /* Report Card Styling - Reduced font sizes for PDF */
+    .report-card {
+      width: 100%;
+      background: white;
+      padding: 15px;
+      box-sizing: border-box;
+      font-family: 'Times New Roman', Times, serif;
+      font-size: 12px;
+      line-height: 1.2;
+    }
+
+    .report-header {
+      text-align: center;
+      margin-bottom: 15px;
+      padding-bottom: 8px;
+      border-bottom: 2px solid #000;
+      position: relative;
+    }
+
+    .report-header h1 {
+      font-size: 18px;
+      text-transform: uppercase;
+      margin-bottom: 4px;
+    }
+
+    .report-header h2 {
+      font-size: 14px;
+      margin-bottom: 4px;
+    }
+
+    .report-header h3 {
+      font-size: 12px;
+      font-style: italic;
+      margin-bottom: 8px;
+    }
+
+    .report-logo {
+  position: absolute;
+  top: 25px;    /* ⬆️ move higher into white space */
+  right: 30px;  /* ⬅️ keep a little margin from right edge */
+  width: 70px;  /* 🔽 make logo smaller (was 80px before) */
+  height: 60px;
+  background: white;
+  border-radius: 50%;
+  padding: 4px;
+  box-shadow: 0 0 8px rgba(0,0,0,0.2);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  overflow: hidden;
+}
+
+.report-logo img {
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+  border-radius: 50%;
+}
+
+
+
+    .student-info {
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: space-between;
+      margin-bottom: 15px;
+    }
+
+    .info-group {
+      margin-bottom: 8px;
+      flex-basis: 48%;
+    }
+
+    .info-group p {
+      margin-bottom: 4px;
+      font-size: 12px;
+    }
+
+    .scholastic-table,
+    .coscholastic-table {
+      width: 100%;
+      border-collapse: collapse;
+      margin-bottom: 15px;
+      font-size: 10px;
+    }
+
+    .scholastic-table th,
+    .scholastic-table td,
+    .coscholastic-table th,
+    .coscholastic-table td {
+      border: 1px solid #000;
+      padding: 4px;
+      text-align: center;
+    }
+
+    .scholastic-table th,
+    .coscholastic-table th {
+      background-color: #f5f5f5;
+      font-weight: bold;
+    }
+
+    .max-marks-row {
+      font-weight: bold;
+      background-color: #f0f0f0;
+    }
+
+    .signature-area {
+      display: flex;
+      justify-content: space-between;
+      margin-top: 20px;
+    }
+
+    .signature-box {
+      text-align: center;
+      width: 30%;
+      border-top: 1px solid #000;
+      padding-top: 30px;
+      font-weight: bold;
+      font-size: 11px;
+    }
+
+    .footer {
+      text-align: center;
+      margin-top: 15px;
+      font-size: 10px;
+      color: #666;
+    }
+
+    @media print {
+      body * {
+        visibility: hidden;
+      }
+      .report-card, .report-card * {
+        visibility: visible;
+      }
+      .report-card {
+        position: absolute;
+        left: 0;
+        top: 0;
+        width: 100%;
+        font-size: 10px;
+      }
+    }
+
+    @media (max-width: 900px) {
+      .main-content {
+        flex-direction: column;
+      }
+      
+      .school-logo {
+        position: relative;
+        margin: 0 auto 15px;
+        top: 0;
+        right: 0;
+      }
+      
+      .report-logo {
+        position: relative;
+        margin: 0 auto 10px;
+        top: 0;
+        right: 0;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <header>
+      <h1>PM SHREE ATAL UTKRISHT GOV. INTER COLLEGE HALDUCHAUR (NAINITAL)</h1>
+      <h2>Affiliation No. 83253</h2>
+      <h3>Report Card Generator (Session: 2024-2025)</h3>
+      <div class="school-logo">
+        <img src="logo.jpg" alt="School Logo" style="width:100%; height:100%; border-radius:50%;" />
+      </div>
+    </header>
+
+    <div class="main-content">
+      <div class="form-container">
+        <form id="reportForm" autocomplete="on">
+          <div class="form-section">
+            <h3><i class="fas fa-user-graduate"></i> Student Profile</h3>
+            <div class="form-group">
+              <label for="name">NAME:</label>
+              <input type="text" id="name" name="name" placeholder="Enter full name" required />
+            </div>
+            <div class="form-group">
+              <label for="class">CLASS & SECTION:</label>
+              <input type="text" id="class" name="class" placeholder="10 A" required />
+            </div>
+            <div class="form-group">
+              <label for="dob">D.O.B.:</label>
+              <input type="date" id="dob" name="dob" required />
+            </div>
+            <div class="form-group">
+              <label for="father">FATHER'S NAME:</label>
+              <input type="text" id="father" name="father" placeholder="Father's Name" required />
+            </div>
+            <div class="form-group">
+              <label for="mother">MOTHER'S NAME:</label>
+              <input type="text" id="mother" name="mother" placeholder="Mother's Name" required />
+            </div>
+            <div class="form-group">
+              <label for="address">RESIDENTIAL ADDRESS:</label>
+              <input type="text" id="address" name="address" placeholder="Residential Address" required />
+            </div>
+          </div>
+
+          <div class="form-section">
+            <h3><i class="fas fa-id-card"></i> Student Identification</h3>
+            <div class="form-group">
+              <label for="roll">ROLL NO:</label>
+              <input type="text" id="roll" name="roll" required />
+            </div>
+            <div class="form-group">
+              <label for="admission">ADMISSION NO:</label>
+              <input type="text" id="admission" name="admission" required />
+            </div>
+            <div class="form-group">
+              <label for="cbse">CBSE REG. NO:</label>
+              <input type="text" id="cbse" name="cbse" required />
+            </div>
+          </div>
+
+          <div class="form-section">
+            <h3><i class="fas fa-book"></i> Scholastic Areas</h3>
+            <table class="marks-table">
+              <thead>
+                <tr>
+                  <th>Subject</th>
+                  <th>Term 1 Theory</th>
+                  <th>Term 1 IA/Project</th>
+                  <th>Term 2 Theory</th>
+                  <th>Term 2 IA/Project</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td>HINDI (022)</td>
+                  <td><input type="number" id="hindi_t1_theory" min="0" max="80" /></td>
+                  <td><input type="number" id="hindi_t1_ia" min="0" max="20" /></td>
+                  <td><input type="number" id="hindi_t2_theory" min="0" max="80" /></td>
+                  <td><input type="number" id="hindi_t2_ia" min="0" max="20" /></td>
+                </tr>
+                <tr>
+                  <td>ENGLISH (101)</td>
+                  <td><input type="number" id="eng_t1_theory" min="0" max="80" /></td>
+                  <td><input type="number" id="eng_t1_ia" min="0" max="20" /></td>
+                  <td><input type="number" id="eng_t2_theory" min="0" max="80" /></td>
+                  <td><input type="number" id="eng_t2_ia" min="0" max="20" /></td>
+                </tr>
+                <tr>
+                  <td>MATHEMATICS (041)</td>
+                  <td><input type="number" id="math_t1_theory" min="0" max="80" /></td>
+                  <td><input type="number" id="math_t1_ia" min="0" max="20" /></td>
+                  <td><input type="number" id="math_t2_theory" min="0" max="80" /></td>
+                  <td><input type="number" id="math_t2_ia" min="0" max="20" /></td>
+                </tr>
+                <tr>
+                  <td>SCIENCE (086)</td>
+                  <td><input type="number" id="sci_t1_theory" min="0" max="80" /></td>
+                  <td><input type="number" id="sci_t1_ia" min="0" max="20" /></td>
+                  <td><input type="number" id="sci_t2_theory" min="0" max="80" /></td>
+                  <td><input type="number" id="sci_t2_ia" min="0" max="20" /></td>
+                </tr>
+                <tr>
+                  <td>SOCIAL SCIENCE (087)</td>
+                  <td><input type="number" id="sst_t1_theory" min="0" max="80" /></td>
+                  <td><input type="number" id="sst_t1_ia" min="0" max="20" /></td>
+                  <td><input type="number" id="sst_t2_theory" min="0" max="80" /></td>
+                  <td><input type="number" id="sst_t2_ia" min="0" max="20" /></td>
+                </tr>
+                <tr>
+                  <td>SANSKRIT (122)</td>
+                  <td><input type="number" id="sans_t1_theory" min="0" max="80" /></td>
+                  <td><input type="number" id="sans_t1_ia" min="0" max="20" /></td>
+                  <td><input type="number" id="sans_t2_theory" min="0" max="80" /></td>
+                  <td><input type="number" id="sans_t2_ia" min="0" max="20" /></td>
+                </tr>
+                <tr>
+                  <td>INFORMATION TECH. (422)</td>
+                  <td><input type="number" id="it_t1_theory" min="0" max="50" /></td>
+                  <td><input type="number" id="it_t1_ia" min="0" max="50" /></td>
+                  <td><input type="number" id="it_t2_theory" min="0" max="50" /></td>
+                  <td><input type="number" id="it_t2_ia" min="0" max="50" /></td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+
+          <div class="form-section">
+            <h3><i class="fas fa-running"></i> Co-Scholastic Areas</h3>
+            <table class="marks-table">
+              <thead>
+                <tr>
+                  <th>Activity</th>
+                  <th>Term 1 Grade</th>
+                  <th>Term 2 Grade</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td>General Studies</td>
+                  <td><input type="text" id="gen_studies_t1" placeholder="A1–E" /></td>
+                  <td><input type="text" id="gen_studies_t2" placeholder="A1–E" /></td>
+                </tr>
+                <tr>
+                  <td>Health and Fitness</td>
+                  <td><input type="text" id="health_t1" placeholder="A1–E" /></td>
+                  <td><input type="text" id="health_t2" placeholder="A1–E" /></td>
+                </tr>
+                <tr>
+                  <td>Discipline</td>
+                  <td><input type="text" id="discipline_t1" placeholder="A1–E" /></td>
+                  <td><input type="text" id="discipline_t2" placeholder="A1–E" /></td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+
+          <div class="form-section">
+            <h3><i class="fas fa-calendar-alt"></i> Attendance & Results</h3>
+            <div class="form-group">
+              <label for="attendance_t1">Term 1 Attendance:</label>
+              <input type="text" id="attendance_t1" placeholder="Days present/total e.g. 85/90" />
+            </div>
+            <div class="form-group">
+              <label for="attendance_t2">Term 2 Attendance:</label>
+              <input type="text" id="attendance_t2" placeholder="Days present/total e.g. 90/95" />
+            </div>
+            <div class="form-group">
+              <label for="remarks">Remarks:</label>
+              <input type="text" id="remarks" placeholder="Congratulations on your progress!" />
+            </div>
+            <div class="form-group">
+              <label for="result">Result:</label>
+              <select id="result">
+                <option value="Passed">Passed</option>
+                <option value="Failed">Failed</option>
+              </select>
+            </div>
+          </div>
+        </form>
+
+        <div class="button-group">
+          <button type="button" class="btn-generate" id="btnGenerate"><i class="fas fa-file-alt"></i> Generate Report</button>
+          <button type="button" class="btn-reset" id="btnReset"><i class="fas fa-redo"></i> Reset Form</button>
+          <button type="button" class="btn-save" id="btnSave"><i class="fas fa-save"></i> Save</button>
+          <button type="button" class="btn-load" id="btnLoad"><i class="fas fa-upload"></i> Load</button>
+        </div>
+      </div>
+
+      <div class="preview-container">
+        <h3>Report Card Preview</h3>
+        <div id="reportCard" class="report-card">
+          <div class="report-header">
+            <h1>PM SHREE ATAL UTKRISHT GOV. INTER COLLEGE HALDUCHAUR (NAINITAL)</h1>
+            <h2>Affiliation No. 83253</h2>
+            <h3>Progress Report (Session : 2024-2025)</h3>
+            <p>Issued by school as per directives of Central Board Education, Delhi</p>
+            <div class="report-logo">
+                <img src="logo.jpg" alt="School Logo" style="width:100%; height:100%; border-radius:50%;" />
+              </div>
+              
+          </div>
+
+          <div class="student-info">
+            <div class="info-group">
+              <p><strong>NAME:</strong> <span id="r_name"></span></p>
+              <p><strong>CLASS & SECTION:</strong> <span id="r_class"></span></p>
+              <p><strong>D.O.B.:</strong> <span id="r_dob"></span></p>
+            </div>
+            <div class="info-group">
+              <p><strong>FATHER'S NAME:</strong> <span id="r_father"></span></p>
+              <p><strong>MOTHER'S NAME:</strong> <span id="r_mother"></span></p>
+              <p><strong>RESIDENTIAL ADDRESS:</strong> <span id="r_address"></span></p>
+            </div>
+          </div>
+
+          <div class="student-info">
+            <div class="info-group">
+              <p><strong>ROLL NO:</strong> <span id="r_roll"></span></p>
+              <p><strong>ADMISSION NO:</strong> <span id="r_admission"></span></p>
+            </div>
+            <div class="info-group">
+              <p><strong>CBSE REG. NO:</strong> <span id="r_cbse"></span></p>
+            </div>
+          </div>
+
+          <h4>Part I : Scholastic Areas</h4>
+          <table class="scholastic-table">
+            <thead>
+              <tr>
+                <th rowspan="2">SUBJECT CODE</th>
+                <th rowspan="2">SUBJECT</th>
+                <th colspan="3">Term - 1</th>
+                <th colspan="3">Term - 2</th>
+                <th rowspan="2">G.Total</th>
+                <th rowspan="2">Overall Grade</th>
+              </tr>
+              <tr>
+                <th>Theory</th>
+                <th>IA/Project</th>
+                <th>Total</th>
+                <th>Theory</th>
+                <th>IA/Project</th>
+                <th>Total</th>
+              </tr>
+              <tr class="max-marks-row">
+                <td colspan="2">Max Marks</td>
+                <td>80</td>
+                <td>20</td>
+                <td>100</td>
+                <td>80</td>
+                <td>20</td>
+                <td>100</td>
+                <td>200</td>
+                <td>-</td>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td>022</td>
+                <td>HINDI</td>
+                <td id="r_hindi_t1_theory"></td>
+                <td id="r_hindi_t1_ia"></td>
+                <td id="r_hindi_t1_total"></td>
+                <td id="r_hindi_t2_theory"></td>
+                <td id="r_hindi_t2_ia"></td>
+                <td id="r_hindi_t2_total"></td>
+                <td id="r_hindi_grand"></td>
+                <td id="r_hindi_grade"></td>
+              </tr>
+              <tr>
+                <td>101</td>
+                <td>ENGLISH</td>
+                <td id="r_eng_t1_theory"></td>
+                <td id="r_eng_t1_ia"></td>
+                <td id="r_eng_t1_total"></td>
+                <td id="r_eng_t2_theory"></td>
+                <td id="r_eng_t2_ia"></td>
+                <td id="r_eng_t2_total"></td>
+                <td id="r_eng_grand"></td>
+                <td id="r_eng_grade"></td>
+              </tr>
+              <tr>
+                <td>041</td>
+                <td>MATHEMATICS</td>
+                <td id="r_math_t1_theory"></td>
+                <td id="r_math_t1_ia"></td>
+                <td id="r_math_t1_total"></td>
+                <td id="r_math_t2_theory"></td>
+                <td id="r_math_t2_ia"></td>
+                <td id="r_math_t2_total"></td>
+                <td id="r_math_grand"></td>
+                <td id="r_math_grade"></td>
+              </tr>
+              <tr>
+                <td>086</td>
+                <td>SCIENCE</td>
+                <td id="r_sci_t1_theory"></td>
+                <td id="r_sci_t1_ia"></td>
+                <td id="r_sci_t1_total"></td>
+                <td id="r_sci_t2_theory"></td>
+                <td id="r_sci_t2_ia"></td>
+                <td id="r_sci_t2_total"></td>
+                <td id="r_sci_grand"></td>
+                <td id="r_sci_grade"></td>
+              </tr>
+              <tr>
+                <td>087</td>
+                <td>SOCIAL SCIENCE</td>
+                <td id="r_sst_t1_theory"></td>
+                <td id="r_sst_t1_ia"></td>
+                <td id="r_sst_t1_total"></td>
+                <td id="r_sst_t2_theory"></td>
+                <td id="r_sst_t2_ia"></td>
+                <td id="r_sst_t2_total"></td>
+                <td id="r_sst_grand"></td>
+                <td id="r_sst_grade"></td>
+              </tr>
+              <tr>
+                <td>122</td>
+                <td>SANSKRIT</td>
+                <td id="r_sans_t1_theory"></td>
+                <td id="r_sans_t1_ia"></td>
+                <td id="r_sans_t1_total"></td>
+                <td id="r_sans_t2_theory"></td>
+                <td id="r_sans_t2_ia"></td>
+                <td id="r_sans_t2_total"></td>
+                <td id="r_sans_grand"></td>
+                <td id="r_sans_grade"></td>
+              </tr>
+              <tr>
+                <td>422</td>
+                <td>INFORMATION TECHNOLOGY</td>
+                <td id="r_it_t1_theory"></td>
+                <td id="r_it_t1_ia"></td>
+                <td id="r_it_t1_total"></td>
+                <td id="r_it_t2_theory"></td>
+                <td id="r_it_t2_ia"></td>
+                <td id="r_it_t2_total"></td>
+                <td id="r_it_grand"></td>
+                <td id="r_it_grade"></td>
+              </tr>
+            </tbody>
+          </table>
+
+          <div class="student-info">
+            <div class="info-group">
+              <p><strong>Overall Percentage:</strong> <span id="r_overall_percentage"></span></p>
+            </div>
+            <div class="info-group">
+              <p><strong>Overall Grade:</strong> <span id="r_overall_grade"></span></p>
+            </div>
+          </div>
+
+          <h4>Part-2(A) : Co Scholastic Activities</h4>
+          <table class="coscholastic-table">
+            <thead>
+              <tr>
+                <th>Activities</th>
+                <th>Term-1 Grade</th>
+                <th>Term-2 Grade</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td>General Studies</td>
+                <td id="r_gen_studies_t1"></td>
+                <td id="r_gen_studies_t2"></td>
+              </tr>
+            </tbody>
+          </table>
+
+          <h4>Part-2(B) : Health & Physical Education</h4>
+          <table class="coscholastic-table">
+            <thead>
+              <tr>
+                <th>Activities</th>
+                <th>Term-1 Grade</th>
+                <th>Term-2 Grade</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td>Health and Fitness</td>
+                <td id="r_health_t1"></td>
+                <td id="r_health_t2"></td>
+              </tr>
+            </tbody>
+          </table>
+
+          <h4>Part-2(C) : Discipline</h4>
+          <table class="coscholastic-table">
+            <thead>
+              <tr>
+                <th>Activities</th>
+                <th>Term-1 Grade</th>
+                <th>Term-2 Grade</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td>Discipline</td>
+                <td id="r_discipline_t1"></td>
+                <td id="r_discipline_t2"></td>
+              </tr>
+            </tbody>
+          </table>
+
+          <div class="student-info">
+            <div class="info-group">
+              <p><strong>Attendance Term-1:</strong> <span id="r_attendance_t1"></span></p>
+            </div>
+            <div class="info-group">
+              <p><strong>Attendance Term-2:</strong> <span id="r_attendance_t2"></span></p>
+            </div>
+          </div>
+
+          <div class="student-info">
+            <div class="info-group">
+              <p><strong>Remarks:</strong> <span id="r_remarks"></span></p>
+            </div>
+            <div class="info-group">
+              <p><strong>Result:</strong> <span id="r_result"></span></p>
+            </div>
+          </div>
+
+          <div class="signature-area">
+            <div class="signature-box">Class Teacher</div>
+            <div class="signature-box">Examination Incharge</div>
+            <div class="signature-box">Principal</div>
+          </div>
+
+          <div class="footer">
+            <p>Generated on: <span id="r_date"></span></p>
+          </div>
+        </div>
+
+        <div class="button-group">
+          <button type="button" class="btn-download" id="btnDownload"><i class="fas fa-download"></i> Download PDF</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    // ---- Configuration for Subjects ----
+    const SUBJECTS = [
+      { key: 'hindi', code: '022', name: 'HINDI', maxTheory: 80, maxIA: 20 },
+      { key: 'eng', code: '101', name: 'ENGLISH', maxTheory: 80, maxIA: 20 },
+      { key: 'math', code: '041', name: 'MATHEMATICS', maxTheory: 80, maxIA: 20 },
+      { key: 'sci', code: '086', name: 'SCIENCE', maxTheory: 80, maxIA: 20 },
+      { key: 'sst', code: '087', name: 'SOCIAL SCIENCE', maxTheory: 80, maxIA: 20 },
+      { key: 'sans', code: '122', name: 'SANSKRIT', maxTheory: 80, maxIA: 20 },
+      { key: 'it', code: '422', name: 'INFORMATION TECHNOLOGY', maxTheory: 50, maxIA: 50 },
+    ];
+
+    // ---- Utility Functions ----
+    function clamp(val, min, max) {
+      val = parseFloat(val);
+      if (isNaN(val)) return '';
+      return Math.max(min, Math.min(max, val));
+    }
+
+    function fmt(num) {
+      return Number.isFinite(num) ? num.toString() : '-';
+    }
+
+    function percentage(total, max) {
+      if (!max) return 0;
+      return (total / max) * 100;
+    }
+
+    function calculateGrade(percentage) {
+      const p = typeof percentage === 'string' ? parseFloat(percentage) : percentage;
+      if (isNaN(p)) return '-';
+      if (p >= 91) return 'A1';
+      if (p >= 81) return 'A2';
+      if (p >= 71) return 'B1';
+      if (p >= 61) return 'B2';
+      if (p >= 51) return 'C1';
+      if (p >= 41) return 'C2';
+      if (p >= 33) return 'D';
+      return 'E';
+    }
+
+    function formatDateForDisplay(dateStr) {
+      if (!dateStr) return '';
+      const d = new Date(dateStr);
+      if (isNaN(d.getTime())) return '';
+      return d.toLocaleDateString('en-IN', { day: '2-digit', month: '2-digit', year: 'numeric' });
+    }
+
+    // ---- Generation Logic ----
+    function generateReport() {
+      // Student details
+      document.getElementById('r_name').textContent = document.getElementById('name').value.trim();
+      document.getElementById('r_class').textContent = document.getElementById('class').value.trim();
+      document.getElementById('r_dob').textContent = formatDateForDisplay(document.getElementById('dob').value);
+      document.getElementById('r_father').textContent = document.getElementById('father').value.trim();
+      document.getElementById('r_mother').textContent = document.getElementById('mother').value.trim();
+      document.getElementById('r_address').textContent = document.getElementById('address').value.trim();
+      document.getElementById('r_roll').textContent = document.getElementById('roll').value.trim();
+      document.getElementById('r_admission').textContent = document.getElementById('admission').value.trim();
+      document.getElementById('r_cbse').textContent = document.getElementById('cbse').value.trim();
+
+      let grandTotal = 0;
+      let maxGrandTotal = 0;
+
+      SUBJECTS.forEach(sub => {
+        const t1TheoryEl = document.getElementById(`${sub.key}_t1_theory`);
+        const t1IAEl = document.getElementById(`${sub.key}_t1_ia`);
+        const t2TheoryEl = document.getElementById(`${sub.key}_t2_theory`);
+        const t2IAEl = document.getElementById(`${sub.key}_t2_ia`);
+
+        // Clamp values to valid ranges
+        t1TheoryEl.value = clamp(t1TheoryEl.value, 0, sub.maxTheory);
+        t1IAEl.value = clamp(t1IAEl.value, 0, sub.maxIA);
+        t2TheoryEl.value = clamp(t2TheoryEl.value, 0, sub.maxTheory);
+        t2IAEl.value = clamp(t2IAEl.value, 0, sub.maxIA);
+
+        const t1Theory = parseFloat(t1TheoryEl.value) || 0;
+        const t1IA = parseFloat(t1IAEl.value) || 0;
+        const t2Theory = parseFloat(t2TheoryEl.value) || 0;
+        const t2IA = parseFloat(t2IAEl.value) || 0;
+
+        const t1Total = t1Theory + t1IA;
+        const t2Total = t2Theory + t2IA;
+        const subjectTotal = t1Total + t2Total;
+        const subjectMax = 2 * (sub.maxTheory + sub.maxIA);
+
+        // Fill preview table cells - show only marks, not fractions
+        document.getElementById(`r_${sub.key === 'eng' ? 'eng' : sub.key}_t1_theory`).textContent = fmt(t1Theory);
+        document.getElementById(`r_${sub.key === 'eng' ? 'eng' : sub.key}_t1_ia`).textContent = fmt(t1IA);
+        document.getElementById(`r_${sub.key === 'eng' ? 'eng' : sub.key}_t1_total`).textContent = fmt(t1Total);
+
+        document.getElementById(`r_${sub.key === 'eng' ? 'eng' : sub.key}_t2_theory`).textContent = fmt(t2Theory);
+        document.getElementById(`r_${sub.key === 'eng' ? 'eng' : sub.key}_t2_ia`).textContent = fmt(t2IA);
+        document.getElementById(`r_${sub.key === 'eng' ? 'eng' : sub.key}_t2_total`).textContent = fmt(t2Total);
+
+        document.getElementById(`r_${sub.key === 'eng' ? 'eng' : sub.key}_grand`).textContent = fmt(subjectTotal);
+
+        const perc = percentage(subjectTotal, subjectMax);
+        document.getElementById(`r_${sub.key === 'eng' ? 'eng' : sub.key}_grade`).textContent = calculateGrade(perc);
+
+        grandTotal += subjectTotal;
+        maxGrandTotal += subjectMax;
+      });
+
+      const overallPercentage = maxGrandTotal ? ((grandTotal / maxGrandTotal) * 100).toFixed(2) : '0.00';
+      document.getElementById('r_overall_percentage').textContent = `${overallPercentage}%`;
+      document.getElementById('r_overall_grade').textContent = calculateGrade(parseFloat(overallPercentage));
+
+      // Co-scholastic
+      document.getElementById('r_gen_studies_t1').textContent = (document.getElementById('gen_studies_t1').value || '').toUpperCase();
+      document.getElementById('r_gen_studies_t2').textContent = (document.getElementById('gen_studies_t2').value || '').toUpperCase();
+      document.getElementById('r_health_t1').textContent = (document.getElementById('health_t1').value || '').toUpperCase();
+      document.getElementById('r_health_t2').textContent = (document.getElementById('health_t2').value || '').toUpperCase();
+      document.getElementById('r_discipline_t1').textContent = (document.getElementById('discipline_t1').value || '').toUpperCase();
+      document.getElementById('r_discipline_t2').textContent = (document.getElementById('discipline_t2').value || '').toUpperCase();
+
+      // Attendance and results
+      document.getElementById('r_attendance_t1').textContent = document.getElementById('attendance_t1').value.trim();
+      document.getElementById('r_attendance_t2').textContent = document.getElementById('attendance_t2').value.trim();
+      document.getElementById('r_remarks').textContent = document.getElementById('remarks').value.trim();
+      document.getElementById('r_result').textContent = document.getElementById('result').value;
+
+      // Date
+      const today = new Date();
+      const formattedDate = today.toLocaleDateString('en-IN', {
+        day: '2-digit',
+        month: '2-digit',
+        year: 'numeric',
+      });
+      document.getElementById('r_date').textContent = formattedDate;
+    }
+
+    // ---- PDF Download ----
+    function downloadPDF() {
+      const report = document.getElementById('reportCard');
+      const opt = {
+        margin: [5, 5, 5, 5],
+        filename: 'ReportCard.pdf',
+        image: { type: 'jpeg', quality: 0.98 },
+        html2canvas: { scale: 2, useCORS: true, scrollY: 0 },
+        jsPDF: { unit: 'mm', format: 'a4', orientation: 'portrait' },
+        pagebreak: { mode: ['css', 'legacy'] },
+      };
+      // Ensure latest content is reflected
+      generateReport();
+      html2pdf().set(opt).from(report).save();
+    }
+
+    // ---- Reset Form ----
+    function resetForm() {
+      const form = document.getElementById('reportForm');
+      if (form) form.reset();
+      // Also clear preview
+      document.querySelectorAll('#reportCard span[id^="r_"]').forEach(el => (el.textContent = ''));
+    }
+
+    // ---- Save/Load (localStorage) ----
+    function collectFormData() {
+      const data = {};
+      const inputs = document.querySelectorAll('#reportForm input, #reportForm select');
+      inputs.forEach(inp => (data[inp.id] = inp.value));
+      return data;
+    }
+
+    function populateFormData(data) {
+      if (!data) return;
+      Object.keys(data).forEach(id => {
+        const el = document.getElementById(id);
+        if (el) el.value = data[id];
+      });
+    }
+
+    function saveData() {
+      const data = collectFormData();
+      localStorage.setItem('reportCardData', JSON.stringify(data));
+      alert('Saved locally.');
+    }
+
+    function loadData() {
+      const raw = localStorage.getItem('reportCardData');
+      if (!raw) {
+        alert('No saved data found.');
+        return;
+      }
+      try {
+        const data = JSON.parse(raw);
+        populateFormData(data);
+        generateReport();
+        alert('Loaded saved data.');
+      } catch (e) {
+        console.error(e);
+        alert('Failed to load saved data.');
+      }
+    }
+
+    // ---- Live Validation: keep within min/max ----
+    function attachInputValidation() {
+      SUBJECTS.forEach(sub => {
+        ['t1_theory', 't1_ia', 't2_theory', 't2_ia'].forEach(part => {
+          const el = document.getElementById(`${sub.key}_${part}`);
+          if (!el) return;
+          const isTheory = part.includes('theory');
+          const max = isTheory ? sub.maxTheory : sub.maxIA;
+          el.addEventListener('input', () => {
+            const clamped = clamp(el.value, 0, max);
+            el.value = clamped;
+          });
+        });
+      });
+    }
+
+    // ---- Wire up buttons ----
+    document.getElementById('btnGenerate').addEventListener('click', generateReport);
+    document.getElementById('btnReset').addEventListener('click', resetForm);
+    document.getElementById('btnSave').addEventListener('click', saveData);
+    document.getElementById('btnLoad').addEventListener('click', loadData);
+    document.getElementById('btnDownload').addEventListener('click', downloadPDF);
+
+    // Do NOT autofill DOB with today — keep empty so the user must set it.
+    // Initialize validation listeners
+    attachInputValidation();
+  </script>
+</body>
+</html>
